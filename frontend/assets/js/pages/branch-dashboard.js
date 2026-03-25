@@ -152,7 +152,70 @@ function getStatusText(status) {
 }
 
 function viewOrder(orderId) {
-  window.location.href = `orders.html?id=${orderId}`;
+  showOrderDetail(orderId);
+}
+
+// Modal xem chi tiết đơn hàng
+function showOrderDetail(orderId) {
+  const modal = document.getElementById('orderDetailModal');
+  const closeBtn = document.getElementById('closeOrderModal');
+  const closeBtn2 = document.getElementById('closeBtn2');
+  
+  async function loadOrderDetail() {
+    try {
+      const response = await fetch(`/api/v1/orders/${orderId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (!response.ok) {
+        alert('Không tìm thấy đơn hàng');
+        return;
+      }
+      const { data: order } = await response.json();
+      
+      // Điền thông tin
+      document.getElementById('modalOrderCode').textContent = order.order_code || `#${order.order_id}`;
+      document.getElementById('modalOrderStatus').textContent = getStatusText(order.status);
+      document.getElementById('modalCustomer').textContent = order.full_name || order.customer_id || '--';
+      document.getElementById('modalOrderDate').textContent = new Date(order.created_at).toLocaleString('vi-VN');
+      document.getElementById('modalAddress').textContent = order.delivery_address_id ? `Địa chỉ ${order.delivery_address_id}` : '--';
+      document.getElementById('modalTotal').textContent = `${Number(order.total_amount).toLocaleString('vi-VN')} ₫`;
+      
+      // Danh sách sản phẩm
+      const itemsHtml = (order.items || []).map(item => `
+        <div class="item-row">
+          <div>${item.product_name}</div>
+          <div style="text-align: center;">${item.quantity}</div>
+          <div style="text-align: right;">${Number(item.unit_price).toLocaleString('vi-VN')} ₫</div>
+          <div style="text-align: right; font-weight: 600;">${(item.quantity * item.unit_price).toLocaleString('vi-VN')} ₫</div>
+        </div>
+      `).join('');
+      
+      if (itemsHtml) {
+        document.getElementById('modalItems').innerHTML = `
+          <div class="item-row" style="font-weight: 600; background: #f5f5f5; border-radius: 6px;">
+            <div>Sản Phẩm</div>
+            <div style="text-align: center;">SL</div>
+            <div style="text-align: right;">Giá</div>
+            <div style="text-align: right;">Thành Tiền</div>
+          </div>
+          ${itemsHtml}
+        `;
+      }
+      
+      modal.style.display = 'flex';
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi tải chi tiết đơn hàng');
+    }
+  }
+  
+  closeBtn.onclick = () => modal.style.display = 'none';
+  closeBtn2.onclick = () => modal.style.display = 'none';
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  };
+  
+  loadOrderDetail();
 }
 
 // Initialize

@@ -145,17 +145,48 @@ const listOrders = async ({ customer_id, store_id, role, user_id }) => {
   return rows;
 };
 
-const updateOrderStatus = async ({ order_id, new_status, changed_by }) => {
+const updateOrderStatus = async ({ order_id, new_status, changed_by, note = null }) => {
+  const allowedTransitions = {
+    pending:    ['confirmed', 'cancelled'],
+    confirmed:  ['preparing', 'ready', 'cancelled'],
+    preparing:  ['ready'],
+    ready:      ['delivering'],
+    delivering: ['delivered'],
+    delivered:  [],
+    cancelled:  []
+  };
+
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
     const [[order]] = await conn.execute(`SELECT status, customer_id FROM DonHang WHERE order_id = ?`, [order_id]);
     if (!order) throw Object.assign(new Error('Đơn hàng không tồn tại'), { status: 404 });
-    await conn.execute(`UPDATE DonHang SET status = ?, updated_at = NOW() WHERE order_id = ?`, [new_status, order_id]);
+
+    if (order.status === new_status) {
+      // cho phép idempotent
+      return { ...order, status: new_status, customer_id: order.customer_id };
+    }
+
+    if (!allowedTransitions[order.status] || !allowedTransitions[order.status].includes(new_status)) {
+      throw Object.assign(new Error(`Không thể chuyển trạng thái từ '${order.status}' sang '${new_status}'`), { status: 400 });
+    }
+
+    const updateFields = ['status = ?', 'updated_at = NOW()'];
+    const values = [new_status];
+
+    if (new_status === 'cancelled') {
+      updateFields.push('cancel_reason = ?', 'cancelled_at = NOW()');
+      values.push(note || 'Hủy bởi quản lý', note || 'Hủy bởi quản lý');
+      // Tự động hoàn tiền (nếu có) cho thanh toán
+      await conn.execute(`UPDATE ThanhToan SET status = 'refunded' WHERE order_id = ? AND status = 'pending'`, [order_id]);
+    }
+
+    values.push(order_id);
+    await conn.execute(`UPDATE DonHang SET ${updateFields.join(', ')} WHERE order_id = ?`, values);
     await conn.execute(
-      `INSERT INTO LichSuTrangThai (order_id, old_status, new_status, changed_by, changed_at)
-       VALUES (?, ?, ?, ?, NOW())`,
-      [order_id, order.status, new_status, changed_by]
+      `INSERT INTO LichSuTrangThai (order_id, old_status, new_status, changed_by, note, changed_at)
+       VALUES (?, ?, ?, ?, ?, NOW())`,
+      [order_id, order.status, new_status, changed_by, note || null]
     );
     await conn.commit();
     return { ...order, status: new_status, customer_id: order.customer_id };

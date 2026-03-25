@@ -10,6 +10,23 @@
   <div id="sidebar"></div>
   <main class="main-content">
     <h1>Quản lý Nhân viên | Chi nhánh</h1>
+
+    <div class="card" style="margin-top:1rem; padding:1rem;">
+      <h4>Thêm nhân viên mới</h4>
+      <form id="createStaffForm" style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center;">
+        <input name="full_name" type="text" placeholder="Họ tên" required style="width:180px;" />
+        <input name="email" type="email" placeholder="Email" required style="width:220px;" />
+        <input name="phone" type="text" placeholder="Số điện thoại" style="width:140px;" />
+        <input name="password" type="password" placeholder="Mật khẩu" required style="width:130px;" />
+        <select name="position" required style="width:150px;">
+          <option value="delivery">Giao hàng</option>
+          <option value="kitchen">Nhân viên bếp</option>
+          <option value="warehouse">Kho</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Thêm nhân viên</button>
+      </form>
+    </div>
+
     <div id="staffList" class="card" style="margin-top:1rem; padding:1rem;"></div>
   </main>
   <script type="module" src="../../assets/js/pages/branch-staff.js"></script>

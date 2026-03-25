@@ -5,29 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quản lý Đơn hàng | Chi nhánh</title>
   <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .order-filters {
+      display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;
+      padding: 1rem; background: #f8f9fa; border-radius: 8px;
+    }
+    .order-table { width: 100%; border-collapse: collapse; }
+    .order-table thead th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff;
+      padding: 1rem; text-align: left; font-weight: 600; font-size: 0.95rem;
+    }
+    .order-table tbody td { padding: 1rem; border-bottom: 1px solid #dee2e6; }
+    .order-table tbody tr:hover { background: #f8f9fa; }
+    
+    .status-select {
+      padding: 0.5rem 0.7rem; border: 1px solid #ddd; border-radius: 6px;
+      font-size: 0.9rem; transition: all 0.2s; min-width: 150px;
+      background: white;
+    }
+    .status-select:focus { outline: none; border-color: #e63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.1); }
+    .status-select:hover { border-color: #e63946; }
+    
+    .assign-row { display: flex; gap: 0.5rem; align-items: center; }
+    .delivery-input {
+      padding: 0.5rem 0.7rem; border: 1px solid #ddd; border-radius: 6px;
+      font-size: 0.9rem; min-width: 100px;
+    }
+    .delivery-input:focus { outline: none; border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.1); }
+    .delivery-input:hover { border-color: #198754; }
+    
+    .action-cell { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn-small {
+      padding: 0.5rem 0.8rem; border: 1px solid #ddd; border-radius: 6px;
+      background: white; cursor: pointer; transition: all 0.2s;
+      font-size: 0.9rem; white-space: nowrap;
+    }
+    .btn-small:hover { background: #e9ecef; border-color: #adb5bd; }
+    .btn-small:active { transform: scale(0.98); }
+    
+    .badge-status {
+      display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; text-align: center; min-width: 90px;
+    }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-confirmed { background: #cfe2ff; color: #084298; }
+    .badge-preparing { background: #d1ecf1; color: #0c5460; }
+    .badge-ready { background: #d1e7dd; color: #0f5132; }
+    .badge-delivering { background: #e2e3e5; color: #383d41; }
+    .badge-delivered { background: #d1e7dd; color: #0f5132; font-weight: 700; }
+    .badge-cancelled { background: #f8d7da; color: #842029; }
+  </style>
 </head>
 <body class="dashboard">
   <div id="sidebar"></div>
 
   <main class="main-content">
-    <h1>Quản lý Đơn hàng | Chi nhánh</h1>
-    <p>Quản lý đơn hàng của chi nhánh, phân công giao và cập nhật trạng thái.</p>
+    <h1>📦 Quản lý Đơn Hàng | Chi nhánh</h1>
 
-    <div style="margin: 1rem 0;">
-      <label for="statusFilter">Lọc trạng thái:</label>
-      <select id="statusFilter" class="form-control" style="max-width: 240px; display:inline-block; margin-left:.5rem;">
-        <option value="">Tất cả</option>
-        <option value="pending">Chờ</option>
-        <option value="confirmed">Xác nhận</option>
-        <option value="preparing">Chuẩn bị</option>
-        <option value="ready">Sẵn sàng</option>
-        <option value="delivering">Đang giao</option>
-        <option value="delivered">Đã giao</option>
-        <option value="cancelled">Đã hủy</option>
+    <div class="card order-filters">
+      <label for="statusFilter" style="font-weight: 600;">🔽 Lọc trạng thái:</label>
+      <select id="statusFilter" class="status-select">
+        <option value="">✅ Tất cả đơn hàng</option>
+        <option value="pending">⏳ Chờ xác nhận</option>
+        <option value="confirmed">📋 Đã xác nhận</option>
+        <option value="preparing">🍳 Đang chuẩn bị</option>
+        <option value="ready">📦 Sẵn sàng giao</option>
+        <option value="delivering">🚚 Đang giao</option>
+        <option value="delivered">✔️ Đã giao</option>
+        <option value="cancelled">❌ Đã hủy</option>
       </select>
     </div>
 
-    <div id="orderTable" class="card"></div>
+    <div class="card">
+      <div id="orderTable" style="overflow-x: auto;"></div>
+    </div>
   </main>
 
   <script type="module" src="../../assets/js/pages/branch-orders.js"></script>

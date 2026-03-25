@@ -1,9 +1,9 @@
 import { redirectIfNotRole, initLogout } from '../utils/auth.js';
-import { getDeliveryStaff } from '../api/branch.api.js';
+import { getDeliveryStaff, createStaff, updateStaff, disableStaff } from '../api/branch.api.js';
+import { toast } from '../utils/toast.js';
 
 redirectIfNotRole('branch_manager');
 
-// Load sidebar (chung cho mọi trang branch)
 async function loadSidebar() {
   try {
     const response = await fetch('../../components/sidebar-branch.html');
@@ -15,75 +15,86 @@ async function loadSidebar() {
   }
 }
 
-// ==================== CHỈ LOAD DANH SÁCH NHÂN VIÊN ====================
-async function loadStaffList() {
+async function renderStaffList() {
   try {
     const response = await getDeliveryStaff();
     const staff = response.data || [];
-
     const container = document.getElementById('staffList');
 
     if (!staff.length) {
-      container.innerHTML = `
-        <p class="text-center text-muted py-4">Chưa có nhân viên nào tại chi nhánh này.</p>`;
+      container.innerHTML = '<p class="text-center text-muted py-4">Chưa có nhân viên nào tại chi nhánh này.</p>';
       return;
     }
 
-    const html = `
+    container.innerHTML = `
       <h5 class="card-title mb-3">Danh sách nhân viên chi nhánh</h5>
       <table class="table table-hover align-middle">
         <thead class="table-light">
           <tr>
-            <th>Tên nhân viên</th>
-            <th>Điện thoại</th>
-            <th>Vị trí</th>
+            <th>Tên</th>
+            <th>Vai trò</th>
+            <th>Phone</th>
             <th>Trạng thái</th>
-            <th>Mã NV</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
           ${staff.map(person => `
             <tr>
-              <td><strong>${person.full_name}</strong></td>
+              <td>${person.full_name}</td>
+              <td>${person.position}</td>
               <td>${person.phone || '-'}</td>
-              <td>${person.position === 'delivery' ? 'Giao hàng' : 
-                    person.position === 'kitchen' ? 'Bếp' : 
-                    person.position === 'branch_manager' ? 'Quản lý' : 'Kho'}</td>
+              <td>${person.user_status || 'active'} - ${person.is_available ? 'Sẵn sàng' : 'Không sẵn sàng'}</td>
               <td>
-                <span class="badge ${person.is_available ? 'badge-success' : 'badge-secondary'}">
-                  ${person.is_available ? '✅ Sẵn sàng' : '⏳ Bận'}
-                </span>
+                <button class="btn btn-sm btn-secondary disable-staff" data-id="${person.employee_id}">Vô hiệu</button>
               </td>
-              <td><code>${person.employee_code || '-'}</code></td>
             </tr>
           `).join('')}
         </tbody>
       </table>`;
 
-    container.innerHTML = html;
+    document.querySelectorAll('.disable-staff').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Bạn có chắc muốn vô hiệu hóa nhân viên này?')) return;
+        const employeeId = btn.dataset.id;
+        try {
+          await disableStaff(employeeId);
+          toast.success('Vô hiệu hóa nhân viên thành công');
+          await renderStaffList();
+        } catch (err) {
+          toast.error(err.message || 'Lỗi vô hiệu hóa người dùng');
+        }
+      });
+    });
   } catch (error) {
     console.error('Failed to load staff:', error);
-    document.getElementById('staffList').innerHTML = `
-      <div class="alert alert-danger">
-        Không thể tải danh sách nhân viên.<br>
-        <small>Vui lòng kiểm tra console hoặc thử tải lại trang.</small>
-      </div>`;
+    document.getElementById('staffList').innerHTML = '<div class="alert alert-danger">Không thể tải danh sách nhân viên.</div>';
   }
 }
 
-// ==================== KHỞI ĐỘNG TRANG ====================
-document.addEventListener('DOMContentLoaded', () => {
-  loadSidebar();
-  loadStaffList();
+async function initCreateForm() {
+  const form = document.getElementById('createStaffForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const full_name = form.full_name.value;
+    const email = form.email.value;
+    const phone = form.phone.value;
+    const password = form.password.value;
+    const position = form.position.value;
 
-  // Nếu bạn muốn hiển thị ngày hiện tại (tùy chọn)
-  const dateEl = document.getElementById('currentDate');
-  if (dateEl) {
-    dateEl.textContent = new Date().toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
+    try {
+      await createStaff({ full_name, email, phone, password, position });
+      toast.success('Thêm nhân viên thành công');
+      form.reset();
+      await renderStaffList();
+    } catch (err) {
+      toast.error(err.message || 'Lỗi thêm nhân viên');
+    }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadSidebar();
+  await renderStaffList();
+  await initCreateForm();
 });

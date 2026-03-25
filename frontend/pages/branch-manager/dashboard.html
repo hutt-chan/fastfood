@@ -3,9 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard | Quản lý Chi nhánh</title>
-  <link rel="stylesheet" href="../../assets/css/main.css">
-</head>
+  <style>
+    .order-detail-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,.6); z-index: 2000; align-items: center; justify-content: center;
+      animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-body {
+      background: #fff; border-radius: 10px; padding: 2rem;
+      width: 90%; max-width: 750px; max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 10px 50px rgba(0,0,0,.4);
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-close { float: right; font-size: 1.5rem; cursor: pointer; color: #999; }
+    .modal-close:hover { color: #333; }
+    .order-info { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .info-group { display: flex; flex-direction: column; }
+    .info-label { font-weight: 600; color: #666; font-size: .9rem; margin-bottom: .25rem; }
+    .info-value { font-size: 1rem; color: #333; }
+    .items-section { border-top: 2px solid #f0f0f0; padding-top: 1.5rem; }
+    .item-row { display: grid; grid-template-columns: 1fr 100px 100px 120px; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid #f0f0f0; }
+    .item-row:last-child { border-bottom: none; }
+    .modal-footer { display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end; }
+    .btn-modal { padding: .6rem 1.5rem; }
+  </style>
+
+  <!-- Order Detail Modal -->
+  <div id="orderDetailModal" class="order-detail-modal">
+    <div class="modal-body">
+      <span class="modal-close" id="closeOrderModal">&times;</span>
+      <h2 style="margin-bottom: 1.5rem; color: #333;">📋 Chi Tiết Đơn Hàng</h2>
+      
+      <div class="order-info">
+        <div class="info-group">
+          <span class="info-label">Mã Đơn</span>
+          <span class="info-value" id="modalOrderCode">--</span>
+        </div>
+        <div class="info-group">
+          <span class="info-label">Trạng Thái</span>
+          <span class="info-value" id="modalOrderStatus">--</span>
+        </div>
+        <div class="info-group">
+          <span class="info-label">Khách Hàng</span>
+          <span class="info-value" id="modalCustomer">--</span>
+        </div>
+        <div class="info-group">
+          <span class="info-label">Ngày Đặt</span>
+          <span class="info-value" id="modalOrderDate">--</span>
+        </div>
+        <div class="info-group">
+          <span class="info-label">Địa Chỉ Giao</span>
+          <span class="info-value" id="modalAddress">--</span>
+        </div>
+        <div class="info-group">
+          <span class="info-label">Tổng Tiền</span>
+          <span class="info-value" id="modalTotal" style="font-size: 1.2rem; color: #e63946; font-weight: 600;">--</span>
+        </div>
+      </div>
+
+      <div class="items-section">
+        <h4 style="margin-bottom: 1rem;">Chi Tiết Sản Phẩm</h4>
+        <div id="modalItems" style="min-height: 100px;"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-modal" id="closeBtn2">Đóng</button>
+      </div>
+    </div>
+  </div>
 <body class="dashboard">
   <!-- Sidebar -->
   <div id="sidebar"></div>

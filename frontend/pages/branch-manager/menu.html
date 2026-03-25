@@ -8,9 +8,176 @@
 </head>
 <body class="dashboard">
   <div id="sidebar"></div>
+  <style>
+    .form-group { margin-bottom: 1rem; display: flex; flex-direction: column; }
+    .form-label { font-weight: 600; margin-bottom: .5rem; color: #333; font-size: .95rem; }
+    .form-label span { color: #e63946; }
+    .form-control {
+      padding: .7rem .9rem; border: 1px solid #ddd; border-radius: 6px;
+      font-size: .95rem; font-family: inherit; transition: all .2s ease;
+      background: #fff;
+    }
+    .form-control:focus {
+      outline: none; border-color: #e63946; box-shadow: 0 0 0 3px rgba(230,57,70,.1);
+    }
+    .form-control:hover {
+      border-color: #e63946;
+    }
+    textarea.form-control {
+      resize: vertical; min-height: 80px;
+    }
+
+    .form-addon {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center;
+    }
+    .modal-content {
+      background: #fff; border-radius: 10px; padding: 2rem;
+      width: 90%; max-width: 700px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
+      animation: slideIn .3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header { margin-bottom: 1.5rem; }
+    .modal-header h3 { font-size: 1.4rem; color: #333; }
+    .modal-form {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .modal-form .form-group:nth-child(2),
+    .modal-form .form-group:nth-child(6),
+    .modal-form .form-group:nth-child(7) {
+      grid-column: 1 / -1;
+    }
+    .modal-footer {
+      display: flex; gap: 1rem; justify-content: flex-end;
+      margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee;
+    }
+    .modal-footer .btn {
+      padding: .6rem 1.5rem;
+    }
+
+    .menu-form-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff; padding: 1.5rem; border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .menu-form-header h4 {
+      font-size: 1.2rem; margin-bottom: .5rem;
+    }
+    .menu-form-header p {
+      font-size: .9rem; opacity: 0.95;
+    }
+
+    .menu-table {
+      width: 100%; border-collapse: collapse;
+    }
+    .menu-table thead th {
+      background: #f8f9fa; padding: 1rem;
+      text-align: left; font-weight: 600; color: #333;
+      border-bottom: 2px solid #dee2e6;
+    }
+    .menu-table tbody td {
+      padding: 1rem; border-bottom: 1px solid #dee2e6;
+    }
+    .menu-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+    .menu-table .actions {
+      display: flex; gap: .5rem;
+    }
+
+    .badge-info {
+      display: inline-block; padding: .4rem .8rem; border-radius: 20px;
+      font-size: .85rem; font-weight: 600;
+    }
+    .badge-active { background: #d4edda; color: #155724; }
+    .badge-inactive { background: #f8d7da; color: #721c24; }
+  </style>
+
   <main class="main-content">
-    <h1>Quản lý Thực đơn | Chi nhánh</h1>
-    <div id="menuList" style="margin-top:1rem;"></div>
+    <h1>📋 Quản lý Thực đơn | Chi nhánh</h1>
+    
+    <div class="card" style="margin-top:1.5rem;">
+      <div class="menu-form-header">
+        <h4>➕ Thêm Món Mới Vào Thực Đơn</h4>
+        <p>Điền đầy đủ thông tin sản phẩm để thêm vào menu chi nhánh</p>
+      </div>
+
+      <form id="branchMenuForm" class="form-addon">
+        <div class="form-group">
+          <label class="form-label">Product ID <span>*</span></label>
+          <input type="number" name="product_id" class="form-control" placeholder="Nhập ID sản phẩm" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên Món Ăn</label>
+          <input type="text" name="product_name" class="form-control" placeholder="Tên hiển thị" />
+        </div>
+        <div class="form-group" style="grid-column: 1/-1;">
+          <label class="form-label">Mô Tả</label>
+          <textarea name="description" class="form-control" placeholder="Mô tả chi tiết về món ăn"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Giá Gốc</label>
+          <input type="number" name="base_price" class="form-control" placeholder="Giá gốc (₫)" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Giá Hiển Thị (Override)</label>
+          <input type="number" name="price_override" class="form-control" placeholder="Để trống = dùng giá gốc" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" name="is_available" checked style="margin-right: .5rem;" />
+            ✓ Hiển thị món này
+          </label>
+        </div>
+        <button class="btn btn-primary" type="submit" style="grid-column: 1/-1; padding: .7rem 1.5rem;">➕ Thêm Món</button>
+      </form>
+    </div>
+
+    <!-- Modal chỉnh sửa -->
+    <div id="editMenuModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>✏️ Chỉnh Sửa Món Ăn</h3>
+        </div>
+        <form id="editMenuFormModal" class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Tên Món Ăn</label>
+            <input type="text" name="product_name" class="form-control" placeholder="Tên sản phẩm" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mô Tả</label>
+            <textarea name="description" class="form-control" placeholder="Mô tả chi tiết"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giá Gốc</label>
+            <input type="number" name="base_price" class="form-control" step="0.01" readonly style="background: #f5f5f5; cursor: not-allowed;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giá Hiển Thị (Override)</label>
+            <input type="number" name="price_override" class="form-control" placeholder="Để trống = dùng giá gốc" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <input type="checkbox" name="is_available" style="margin-right: .5rem;" />
+              ✓ Hiển thị món này
+            </label>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" id="cancelEditBtn">Hủy</button>
+            <button class="btn btn-primary" type="submit">💾 Lưu Thay Đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="menuList" style="margin-top: 2rem;"></div>
   </main>
   <script type="module" src="../../assets/js/pages/branch-menu.js"></script>
 </body>
