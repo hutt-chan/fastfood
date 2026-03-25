@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Nhân viên Bếp</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <a class="navbar-brand" href="#">👨‍🍳 FastFood - Bếp</a>
+    <div class="navbar-links">
+      <span id="userName"></span>
+      <button id="logoutBtn" class="btn btn-sm btn-danger">Đăng xuất</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container" style="padding-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Dashboard Bếp</h1>
+      <div>
+        <span id="currentDate"></span>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-4" id="statsGrid">
+      <div class="card stat-card">
+        <div class="stat-value" id="pendingOrders">0</div>
+        <div class="stat-label">Đơn chờ chế biến</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="preparingOrders">0</div>
+        <div class="stat-label">Đang chế biến</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="readyOrders">0</div>
+        <div class="stat-label">Sẵn sàng giao</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="completedToday">0</div>
+        <div class="stat-label">Hoàn thành hôm nay</div>
+      </div>
+    </div>
+
+    <!-- Order Queue -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hàng đợi chế biến</h3>
+      <div id="orderQueue">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Currently Preparing -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Đang chế biến</h3>
+      <div id="preparingOrdersList">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Ready for Pickup -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Sẵn sàng giao</h3>
+      <div id="readyOrdersList">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hành động</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="startPreparing()">Bắt đầu chế biến</button>
+        <button class="btn btn-success" onclick="markReady()">Đánh dấu sẵn sàng</button>
+        <button class="btn btn-info" onclick="viewInventory()">Xem tồn kho</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/kitchen-dashboard.js"></script>
+</body>
+</html>

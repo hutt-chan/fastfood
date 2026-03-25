@@ -1,0 +1,12 @@
+import api from './api.js';
+export const getMenu        = ()                 => api.get('/menu');
+export const getStores      = ()                 => api.get('/stores');
+export const getCart        = ()                 => api.get('/cart');
+export const addToCart      = (data)             => api.post('/cart/add', data);
+export const updateCartItem = (product_id, qty) => api.patch(`/cart/item/${product_id}`, { quantity: qty });
+export const removeFromCart = (product_id)       => api.delete(`/cart/item/${product_id}`);
+export const clearCart      = ()                 => api.delete('/cart/clear');
+export const placeOrder     = (data)             => api.post('/orders', data);
+export const getOrders      = ()                 => api.get('/orders');
+export const getOrderDetail = (id)               => api.get(`/orders/${id}`);
+export const cancelOrder    = (id, reason)       => api.patch(`/orders/${id}/cancel`, { reason });

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Doanh thu | Chi nhánh</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body class="dashboard">
+  <div id="sidebar"></div>
+
+  <main class="main-content">
+    <h1>Báo cáo Doanh thu | Chi nhánh</h1>
+
+    <div class="card" style="margin: 1rem 0; padding:1rem;">
+      <label>Chọn khoảng thời gian:</label>
+      <input type="date" id="fromDate" />
+      <input type="date" id="toDate" />
+      <button id="btnLoad" class="btn btn-primary">Tải dữ liệu</button>
+    </div>
+
+    <div id="revenueTable" class="card" style="padding: 1rem;"></div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/branch-revenue.js"></script>
+</body>
+</html>

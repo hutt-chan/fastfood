@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Quản lý Chi nhánh</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body class="dashboard">
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Dashboard Chi nhánh</h1>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span id="currentDate"></span>
+        <button id="logoutBtn" class="btn btn-danger">🚪 Đăng xuất</button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-4" id="statsGrid">
+      <div class="card stat-card">
+        <div class="stat-value" id="todayOrders">0</div>
+        <div class="stat-label">Đơn hàng hôm nay</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="todayRevenue">0đ</div>
+        <div class="stat-label">Doanh thu hôm nay</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="activeStaff">0</div>
+        <div class="stat-label">Nhân viên đang làm</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="pendingOrders">0</div>
+        <div class="stat-label">Đơn chờ xử lý</div>
+      </div>
+    </div>
+
+    <!-- Today's Orders -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Đơn hàng hôm nay</h3>
+      <div id="todayOrdersList">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Staff Status -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Trạng thái nhân viên</h3>
+      <div id="staffStatus">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hành động nhanh</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="orders.html" class="btn btn-primary">Xem đơn hàng</a>
+        <a href="menu.html" class="btn btn-secondary">Cập nhật thực đơn</a>
+        <a href="staff.html" class="btn btn-success">Quản lý nhân viên</a>
+        <a href="revenue.html" class="btn btn-info">Xem báo cáo</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/branch-dashboard.js"></script>
+</body>
+</html>

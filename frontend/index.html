@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FastFood — Đặt hàng online</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <script>
+    const token = localStorage.getItem('token');
+    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+    const ROLE_HOME = {
+      customer:       '/pages/customer/home.html',
+      branch_manager: '/pages/branch-manager/dashboard.html',
+      kitchen:        '/pages/kitchen/dashboard.html',
+      delivery:       '/pages/delivery/dashboard.html',
+      admin:          '/pages/admin/dashboard.html',
+      warehouse:      '/pages/warehouse/dashboard.html',
+    };
+    if (token && user) window.location.href = ROLE_HOME[user.role] || '/pages/auth/login.html';
+    else               window.location.href = '/pages/auth/login.html';
+  </script>
+</body>
+</html>

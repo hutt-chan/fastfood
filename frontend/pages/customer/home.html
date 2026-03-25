@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trang chủ | FastFood</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbar"></div>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background: linear-gradient(135deg, var(--primary), var(--primary-dk)); color: white; padding: 4rem 0; text-align: center;">
+    <div class="container">
+      <h1 style="font-size: 3rem; margin-bottom: 1rem;">🍔 Chào mừng đến FastFood</h1>
+      <p style="font-size: 1.2rem; margin-bottom: 2rem;">Đặt đồ ăn nhanh chóng, tiện lợi và ngon miệng</p>
+      <a href="menu.html" class="btn btn-secondary" style="font-size: 1.1rem; padding: 0.75rem 2rem;">Xem thực đơn ngay</a>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories" style="padding: 4rem 0; background: var(--light);">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 2rem; color: var(--dark);">Danh mục nổi bật</h2>
+      <div id="categoriesGrid" class="grid-4">
+        <!-- Categories will be loaded here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="featured-products" style="padding: 4rem 0;">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 2rem; color: var(--dark);">Sản phẩm nổi bật</h2>
+      <div id="productsGrid" class="grid-4">
+        <!-- Products will be loaded here -->
+      </div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="menu.html" class="btn btn-primary">Xem tất cả sản phẩm</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background: var(--dark); color: white; padding: 2rem 0; text-align: center;">
+    <div class="container">
+      <p>&copy; 2024 FastFood. Tất cả quyền được bảo lưu.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../../assets/js/pages/home.js"></script>
+</body>
+</html>

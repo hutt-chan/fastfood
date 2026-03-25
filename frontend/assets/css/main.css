@@ -1,0 +1,146 @@
+/* ── Reset & Base ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary:    #e63946;
+  --primary-dk: #c1121f;
+  --secondary:  #f4a261;
+  --dark:       #1d3557;
+  --light:      #f8f9fa;
+  --gray:       #6c757d;
+  --success:    #198754;
+  --warning:    #ffc107;
+  --danger:     #dc3545;
+  --border:     #dee2e6;
+  --radius:     8px;
+  --shadow:     0 2px 8px rgba(0,0,0,.1);
+  --transition: .2s ease;
+}
+
+body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: #333; line-height: 1.6; }
+a    { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-dk); }
+img  { max-width: 100%; }
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.grid-2   { display: grid; grid-template-columns: 1fr 1fr;      gap: 1.5rem; }
+.grid-3   { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+.grid-4   { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+@media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+.navbar {
+  background: var(--dark); color: #fff;
+  padding: .875rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
+}
+.navbar-brand { font-size: 1.4rem; font-weight: 700; color: var(--secondary); }
+.navbar-links a { color: #fff; margin-left: 1.25rem; font-size: .95rem; }
+.navbar-links a:hover { color: var(--secondary); }
+
+/* ── Sidebar (dashboard layouts) ───────────────────────────── */
+.dashboard { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; background: var(--dark); color: #fff;
+  padding: 1.5rem 0; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: .25rem;
+}
+.sidebar-brand { padding: .75rem 1.25rem; font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
+.sidebar a {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .7rem 1.25rem; color: #ccc; font-size: .9rem;
+  transition: var(--transition);
+}
+.sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,.1); color: #fff; }
+.main-content { flex: 1; padding: 2rem; background: var(--light); overflow-y: auto; }
+
+/* ── Card ───────────────────────────────────────────────────── */
+.card {
+  background: #fff; border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 1.5rem;
+  transition: var(--transition);
+}
+.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: .75rem; color: var(--dark); }
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .55rem 1.25rem; border: none; border-radius: var(--radius);
+  cursor: pointer; font-size: .9rem; font-weight: 500;
+  transition: var(--transition); text-decoration: none;
+}
+.btn-primary  { background: var(--primary);  color: #fff; }
+.btn-primary:hover  { background: var(--primary-dk); }
+.btn-secondary{ background: var(--secondary); color: #fff; }
+.btn-success  { background: var(--success);  color: #fff; }
+.btn-danger   { background: var(--danger);   color: #fff; }
+.btn-outline  { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+.btn-sm       { padding: .35rem .8rem; font-size: .82rem; }
+.btn-block    { width: 100%; justify-content: center; }
+
+/* ── Form ───────────────────────────────────────────────────── */
+.form-group { margin-bottom: 1rem; }
+.form-label { display: block; margin-bottom: .35rem; font-size: .9rem; font-weight: 500; }
+.form-control {
+  width: 100%; padding: .6rem .9rem;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: .95rem; transition: var(--transition);
+}
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,.15); }
+.form-error { color: var(--danger); font-size: .82rem; margin-top: .25rem; }
+
+/* ── Badge / Status ─────────────────────────────────────────── */
+.badge {
+  display: inline-block; padding: .25rem .65rem;
+  border-radius: 20px; font-size: .78rem; font-weight: 600;
+}
+.badge-pending   { background: #fff3cd; color: #856404; }
+.badge-confirmed { background: #cff4fc; color: #055160; }
+.badge-preparing { background: #fff3cd; color: #664d03; }
+.badge-ready     { background: #d1e7dd; color: #0a3622; }
+.badge-delivering{ background: #cfe2ff; color: #084298; }
+.badge-delivered { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled { background: #f8d7da; color: #842029; }
+
+/* ── Table ──────────────────────────────────────────────────── */
+.table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.table th { background: var(--dark); color: #fff; padding: .75rem 1rem; text-align: left; }
+.table td { padding: .7rem 1rem; border-bottom: 1px solid var(--border); }
+.table tr:hover td { background: #f5f5f5; }
+
+/* ── Product card ───────────────────────────────────────────── */
+.product-card { cursor: pointer; }
+.product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius) var(--radius) 0 0; }
+.product-card-body { padding: 1rem; }
+.product-price { color: var(--primary); font-size: 1.1rem; font-weight: 700; }
+
+/* ── Toast ──────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  padding: .8rem 1.5rem; border-radius: var(--radius);
+  color: #fff; font-size: .9rem; font-weight: 500;
+  opacity: 0; transform: translateY(20px);
+  transition: all .3s ease; z-index: 9999;
+}
+.toast.show  { opacity: 1; transform: translateY(0); }
+.toast-success { background: var(--success); }
+.toast-error   { background: var(--danger); }
+.toast-info    { background: var(--dark); }
+
+/* ── Stat cards (dashboard) ─────────────────────────────────── */
+.stat-card { text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: .85rem; color: var(--gray); }
+
+/* ── Spinner ────────────────────────────────────────────────── */
+.spinner {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  animation: spin .7s linear infinite;
+  margin: 2rem auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

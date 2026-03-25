@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Nhân viên Giao hàng</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <a class="navbar-brand" href="#">🚚 FastFood - Giao hàng</a>
+    <div class="navbar-links">
+      <span id="userName"></span>
+      <button id="logoutBtn" class="btn btn-sm btn-danger">Đăng xuất</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container" style="padding-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Dashboard Giao hàng</h1>
+      <div>
+        <span id="currentDate"></span>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-4" id="statsGrid">
+      <div class="card stat-card">
+        <div class="stat-value" id="assignedOrders">0</div>
+        <div class="stat-label">Đơn được giao</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="deliveredToday">0</div>
+        <div class="stat-label">Đã giao hôm nay</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="earningsToday">0đ</div>
+        <div class="stat-label">Thu nhập hôm nay</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="rating">0</div>
+        <div class="stat-label">Đánh giá trung bình</div>
+      </div>
+    </div>
+
+    <!-- Current Deliveries -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Đơn hàng đang giao</h3>
+      <div id="currentDeliveries">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Delivery History -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Lịch sử giao hàng hôm nay</h3>
+      <div id="deliveryHistory">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hành động</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="updateStatus('available')">Sẵn sàng nhận đơn</button>
+        <button class="btn btn-secondary" onclick="updateStatus('busy')">Đang bận</button>
+        <button class="btn btn-info" onclick="viewMap()">Xem bản đồ</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/delivery-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Quản lý Kho</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body class="dashboard">
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Dashboard Kho</h1>
+      <div>
+        <span id="currentDate"></span>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-4" id="statsGrid">
+      <div class="card stat-card">
+        <div class="stat-value" id="totalItems">0</div>
+        <div class="stat-label">Tổng mặt hàng</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="lowStockItems">0</div>
+        <div class="stat-label">Hết/cạn hàng</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="pendingImports">0</div>
+        <div class="stat-label">Nhập chờ xử lý</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="pendingExports">0</div>
+        <div class="stat-label">Xuất chờ xử lý</div>
+      </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Cảnh báo tồn kho thấp</h3>
+      <div id="lowStockAlert">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hoạt động gần đây</h3>
+      <div id="recentActivities">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Yêu cầu chờ xử lý</h3>
+      <div id="pendingRequests">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hành động nhanh</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="import.html" class="btn btn-primary">Nhập kho</a>
+        <a href="export.html" class="btn btn-secondary">Xuất kho</a>
+        <a href="inventory.html" class="btn btn-success">Xem tồn kho</a>
+        <a href="stocktake.html" class="btn btn-info">Kiểm kê</a>
+        <a href="report.html" class="btn btn-warning">Báo cáo</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/warehouse-dashboard.js"></script>
+</body>
+</html>

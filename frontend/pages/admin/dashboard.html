@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Admin</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body class="dashboard">
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Dashboard Quản trị</h1>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span id="currentDate"></span>
+        <button id="logoutBtn" class="btn btn-danger">🚪 Đăng xuất</button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-4" id="statsGrid">
+      <div class="card stat-card">
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">Tổng đơn hàng</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="totalRevenue">0đ</div>
+        <div class="stat-label">Doanh thu hôm nay</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="activeUsers">0</div>
+        <div class="stat-label">Khách hàng active</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="pendingOrders">0</div>
+        <div class="stat-label">Đơn chờ xử lý</div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Đơn hàng gần đây</h3>
+      <div id="recentOrders">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3 class="card-title">Hành động nhanh</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="products.html" class="btn btn-primary">Quản lý sản phẩm</a>
+        <a href="stores.html" class="btn btn-secondary">Quản lý chi nhánh</a>
+        <a href="users.html" class="btn btn-success">Quản lý tài khoản</a>
+        <a href="report.html" class="btn btn-info">Xem báo cáo</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/admin-dashboard.js"></script>
+</body>
+</html>

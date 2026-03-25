@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý Đơn hàng | Chi nhánh</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body class="dashboard">
+  <div id="sidebar"></div>
+
+  <main class="main-content">
+    <h1>Quản lý Đơn hàng | Chi nhánh</h1>
+    <p>Quản lý đơn hàng của chi nhánh, phân công giao và cập nhật trạng thái.</p>
+
+    <div style="margin: 1rem 0;">
+      <label for="statusFilter">Lọc trạng thái:</label>
+      <select id="statusFilter" class="form-control" style="max-width: 240px; display:inline-block; margin-left:.5rem;">
+        <option value="">Tất cả</option>
+        <option value="pending">Chờ</option>
+        <option value="confirmed">Xác nhận</option>
+        <option value="preparing">Chuẩn bị</option>
+        <option value="ready">Sẵn sàng</option>
+        <option value="delivering">Đang giao</option>
+        <option value="delivered">Đã giao</option>
+        <option value="cancelled">Đã hủy</option>
+      </select>
+    </div>
+
+    <div id="orderTable" class="card"></div>
+  </main>
+
+  <script type="module" src="../../assets/js/pages/branch-orders.js"></script>
+</body>
+</html>

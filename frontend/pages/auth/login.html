@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập — FastFood</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { width: 100%; max-width: 420px; }
+    .login-logo { text-align: center; font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="login-box card">
+    <div class="login-logo">🍔 FastFood</div>
+    <h2 style="margin-bottom:1.25rem;text-align:center">Đăng nhập</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mật khẩu</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+      </div>
+      <p id="errorMsg" class="form-error" style="display:none"></p>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:.5rem">Đăng nhập</button>
+    </form>
+    <p style="text-align:center;margin-top:1rem;font-size:.9rem">
+      Chưa có tài khoản? <a href="register.html">Đăng ký</a>
+    </p>
+  </div>
+  <script type="module" src="../../assets/js/pages/login.js"></script>
+</body>
+</html>

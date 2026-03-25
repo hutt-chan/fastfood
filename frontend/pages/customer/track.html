@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theo dõi đơn hàng | Khách hàng</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="container" style="padding-top:2rem">
+    <h1>Theo dõi đơn hàng</h1>
+    <form id="trackForm" class="form" style="max-width:520px">
+      <label>Nhập mã đơn hàng</label>
+      <input id="orderId" class="form-control" required>
+      <button type="submit" class="btn btn-primary" style="margin-top:0.75rem">Xem trạng thái</button>
+    </form>
+    <div id="trackResult" style="margin-top:1rem"></div>
+  </div>
+  <script type="module" src="../../assets/js/pages/track.js"></script>
+</body>
+</html>
