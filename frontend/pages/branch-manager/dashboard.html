@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .order-detail-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -90,37 +92,27 @@
     <!-- Stats Cards -->
     <div class="grid-4" id="statsGrid">
       <div class="card stat-card">
-        <div class="stat-value" id="todayOrders">0</div>
-        <div class="stat-label">Đơn hàng hôm nay</div>
-      </div>
-      <div class="card stat-card">
         <div class="stat-value" id="todayRevenue">0đ</div>
         <div class="stat-label">Doanh thu hôm nay</div>
-      </div>
-      <div class="card stat-card">
-        <div class="stat-value" id="activeStaff">0</div>
-        <div class="stat-label">Nhân viên đang làm</div>
       </div>
       <div class="card stat-card">
         <div class="stat-value" id="pendingOrders">0</div>
         <div class="stat-label">Đơn chờ xử lý</div>
       </div>
-    </div>
-
-    <!-- Today's Orders -->
-    <div class="card" style="margin-top: 2rem;">
-      <h3 class="card-title">Đơn hàng hôm nay</h3>
-      <div id="todayOrdersList">
-        <div class="spinner"></div>
+      <div class="card stat-card">
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">Tổng đơn tháng này</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" id="totalRevenue">0đ</div>
+        <div class="stat-label">Tổng doanh thu tháng</div>
       </div>
     </div>
 
-    <!-- Staff Status -->
+    <!-- Revenue Chart -->
     <div class="card" style="margin-top: 2rem;">
-      <h3 class="card-title">Trạng thái nhân viên</h3>
-      <div id="staffStatus">
-        <div class="spinner"></div>
-      </div>
+      <h3 class="card-title">Doanh thu 5 tháng gần đây</h3>
+      <canvas id="revenueChart" width="400" height="200"></canvas>
     </div>
 
     <!-- Quick Actions -->

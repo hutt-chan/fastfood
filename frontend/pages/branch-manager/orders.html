@@ -63,17 +63,51 @@
     <h1>📦 Quản lý Đơn Hàng | Chi nhánh</h1>
 
     <div class="card order-filters">
-      <label for="statusFilter" style="font-weight: 600;">🔽 Lọc trạng thái:</label>
-      <select id="statusFilter" class="status-select">
-        <option value="">✅ Tất cả đơn hàng</option>
-        <option value="pending">⏳ Chờ xác nhận</option>
-        <option value="confirmed">📋 Đã xác nhận</option>
-        <option value="preparing">🍳 Đang chuẩn bị</option>
-        <option value="ready">📦 Sẵn sàng giao</option>
-        <option value="delivering">🚚 Đang giao</option>
-        <option value="delivered">✔️ Đã giao</option>
-        <option value="cancelled">❌ Đã hủy</option>
-      </select>
+      <div style="display: grid; gap: 0.8rem; width: 100%; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div>
+          <label for="statusFilter" style="font-weight: 600;">🔽 Lọc trạng thái:</label>
+          <select id="statusFilter" class="status-select">
+            <option value="">✅ Tất cả đơn hàng</option>
+            <option value="pending">⏳ Chờ xác nhận</option>
+            <option value="confirmed">📋 Đã xác nhận</option>
+            <option value="preparing">🍳 Đang chuẩn bị</option>
+            <option value="ready">📦 Sẵn sàng giao</option>
+            <option value="delivering">🚚 Đang giao</option>
+            <option value="delivered">✔️ Đã giao</option>
+            <option value="cancelled">❌ Đã hủy</option>
+          </select>
+        </div>
+        <div>
+          <label for="dateFilter" style="font-weight: 600;">📅 Lọc theo ngày:</label>
+          <input id="dateFilter" type="date" class="status-select" style="width:100%;" />
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button id="btnApplyFilters" class="btn btn-primary" style="width:100%;">Áp dụng</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal chi tiết đơn hàng -->
+    <div id="orderDetailModal" class="order-detail-modal">
+      <div class="modal-body">
+        <span class="modal-close" id="closeOrderModal">&times;</span>
+        <h2 style="margin-bottom: 1.5rem; color: #333;">📋 Chi Tiết Đơn Hàng</h2>
+        <div class="order-info">
+          <div class="info-group"><span class="info-label">Mã Đơn</span><span class="info-value" id="modalOrderCode">--</span></div>
+          <div class="info-group"><span class="info-label">Trạng Thái</span><span class="info-value" id="modalOrderStatus">--</span></div>
+          <div class="info-group"><span class="info-label">Khách Hàng</span><span class="info-value" id="modalCustomer">--</span></div>
+          <div class="info-group"><span class="info-label">Ngày tạo</span><span class="info-value" id="modalOrderDate">--</span></div>
+          <div class="info-group"><span class="info-label">Địa chỉ</span><span class="info-value" id="modalAddress">--</span></div>
+          <div class="info-group"><span class="info-label">Tổng cộng</span><span class="info-value" id="modalTotal" style="font-size:1.2rem; color:#e63946; font-weight:600;">--</span></div>
+        </div>
+        <div class="items-section">
+          <h4 style="margin-bottom: 1rem;">Chi Tiết Sản Phẩm</h4>
+          <div id="modalItems" style="min-height:100px"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary btn-modal" id="closeBtn2">Đóng</button>
+        </div>
+      </div>
     </div>
 
     <div class="card">

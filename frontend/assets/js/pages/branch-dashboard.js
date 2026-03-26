@@ -1,5 +1,8 @@
 import { redirectIfNotRole, initLogout } from '../utils/auth.js';
 import { getBranchOrders, getRevenue, getDeliveryStaff } from '../api/branch.api.js';
+import { getLocalDateString } from '../utils/format.js';
+
+const Chart = window.Chart;
 
 redirectIfNotRole('branch_manager');
 
@@ -7,6 +10,7 @@ redirectIfNotRole('branch_manager');
 async function loadSidebar() {
   try {
     const response = await fetch('../../components/sidebar-branch.html');
+    if (!response.ok) throw new Error('Failed to fetch sidebar');
     const html = await response.text();
     document.getElementById('sidebar').innerHTML = html;
     // Set active link
@@ -20,120 +24,110 @@ async function loadSidebar() {
     initLogout();
   } catch (error) {
     console.error('Failed to load sidebar:', error);
+    document.getElementById('sidebar').innerHTML = '<p>Lỗi tải sidebar</p>';
   }
 }
 
 // Load dashboard stats
 async function loadStats() {
   try {
-    // Doanh thu 7 ngày
+    // Doanh thu 7 ngày cho todayRevenue
     const to = new Date();
-    const from = new Date();
-    from.setDate(to.getDate() - 6);
-    const fromDate = from.toISOString().split('T')[0];
-    const toDate = to.toISOString().split('T')[0];
+    const from7 = new Date();
+    from7.setDate(to.getDate() - 6);
+    const fromDate7 = getLocalDateString(from7);
+    const toDate7 = getLocalDateString(to) + 'T23:59:59';
 
-    const revenueResponse = await getRevenue({ from: fromDate, to: toDate });
-    const revenueRows = revenueResponse.data || [];
-    const totalRevenue = revenueRows.reduce((sum, r) => sum + Number(r.revenue || 0), 0);
+    console.log('Query revenue 7 days:', fromDate7, toDate7);
+    const revenueResponse7 = await getRevenue({ from: fromDate7, to: toDate7 });
+    const revenueRows7 = revenueResponse7.data || [];
+    console.log('Revenue 7 days:', revenueRows7);
+    const totalRevenue7 = revenueRows7.reduce((sum, r) => sum + Number(r.revenue || 0), 0);
+
+    // Doanh thu tháng này
+    const currentMonthStart = new Date();
+    currentMonthStart.setDate(1);
+    const currentMonthEnd = new Date();
+    currentMonthEnd.setMonth(currentMonthEnd.getMonth() + 1);
+    currentMonthEnd.setDate(0);
+    const fromDateMonth = getLocalDateString(currentMonthStart);
+    const toDateMonth = getLocalDateString(currentMonthEnd) + 'T23:59:59';
+
+    console.log('Query revenue month:', fromDateMonth, toDateMonth);
+    const revenueResponseMonth = await getRevenue({ from: fromDateMonth, to: toDateMonth });
+    const revenueRowsMonth = revenueResponseMonth.data || [];
+    console.log('Revenue month:', revenueRowsMonth);
+    const totalRevenueMonth = revenueRowsMonth.reduce((sum, r) => sum + Number(r.revenue || 0), 0);
 
     const ordersResponse = await getBranchOrders();
     const orders = ordersResponse.data || [];
-    const today = new Date().toISOString().split('T')[0];
+    console.log('Orders:', orders.length);
+    const today = getLocalDateString();
+    const currentMonth = today.substring(0, 7); // YYYY-MM
     const ordersToday = orders.filter((o) => (o.created_at || '').startsWith(today));
+    const ordersMonth = orders.filter((o) => (o.created_at || '').startsWith(currentMonth));
+    console.log('Orders today:', ordersToday.length, 'Orders month:', ordersMonth.length);
 
-    const staffResponse = await getDeliveryStaff();
-    const staff = staffResponse.data || [];
-
-    document.getElementById('todayOrders').textContent = `${ordersToday.length}`;
-    document.getElementById('todayRevenue').textContent = `${totalRevenue.toLocaleString('vi-VN')}đ`;
-    document.getElementById('activeStaff').textContent = `${staff.length}`;
+    document.getElementById('todayRevenue').textContent = `${totalRevenue7.toLocaleString('vi-VN')}đ`;
     document.getElementById('pendingOrders').textContent = `${orders.filter((o) => o.status === 'pending').length}`;
+    document.getElementById('totalOrders').textContent = `${ordersMonth.length}`;
+    document.getElementById('totalRevenue').textContent = `${totalRevenueMonth.toLocaleString('vi-VN')}đ`;
   } catch (error) {
     console.error('Failed to load stats:', error);
   }
 }
 
-// Load today's orders
-async function loadTodayOrders() {
+// Load revenue chart for 5 months
+async function loadRevenueChart() {
   try {
-    const response = await getBranchOrders();
-    const orders = response.data || [];
-    if (!orders.length) {
-      document.getElementById('todayOrdersList').innerHTML = '<p>Chưa có đơn hàng.</p>';
-      return;
+    const to = new Date();
+    const from = new Date();
+    from.setMonth(to.getMonth() - 5);
+    const fromDate = getLocalDateString(from) + 'T00:00:00';
+    const toDate = getLocalDateString(to) + 'T23:59:59';
+
+    const response = await getRevenue({ from: fromDate, to: toDate, type: 'monthly' });
+    const data = response.data || [];
+
+    const labels = [];
+    const revenues = [];
+    for (let i = 0; i < 5; i++) {
+      const month = new Date();
+      month.setMonth(month.getMonth() - (4 - i));
+      const monthStr = month.getFullYear() + '-' + String(month.getMonth() + 1).padStart(2, '0');
+      labels.push(monthStr);
+      const found = data.find(d => d.date === monthStr);
+      revenues.push(found ? Number(found.revenue) : 0);
     }
 
-    const html = `
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Mã đơn</th>
-            <th>Khách hàng</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th>Ngày</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${orders.slice(0, 10).map(order => `
-            <tr>
-              <td>${order.order_code || `#${order.order_id}`}</td>
-              <td>${order.customer_id || 'khách'}</td>
-              <td>${Number(order.total_amount).toLocaleString('vi-VN')} ₫</td>
-              <td><span class="badge badge-${order.status}">${getStatusText(order.status)}</span></td>
-              <td>${new Date(order.created_at).toLocaleString('vi-VN')}</td>
-              <td><button class="btn btn-sm btn-primary" onclick="viewOrder('${order.order_id}')">Chi tiết</button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-    document.getElementById('todayOrdersList').innerHTML = html;
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Doanh thu (VNĐ)',
+          data: revenues,
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value.toLocaleString('vi-VN') + 'đ';
+              }
+            }
+          }
+        }
+      }
+    });
   } catch (error) {
-    console.error('Failed to load orders:', error);
-    document.getElementById('todayOrdersList').innerHTML = '<p>Không thể tải đơn hàng</p>';
-  }
-}
-
-// Load staff status
-async function loadStaffStatus() {
-  try {
-    const response = await getDeliveryStaff();
-    const staff = response.data || [];
-
-    if (!staff.length) {
-      document.getElementById('staffStatus').innerHTML = '<p>Chưa có nhân viên giao hàng.</p>';
-      return;
-    }
-
-    const html = `
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Tên</th>
-            <th>Điện thoại</th>
-            <th>Vai trò</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${staff.map(person => `
-            <tr>
-              <td>${person.full_name}</td>
-              <td>${person.phone || '-'}</td>
-              <td>${person.position || 'Giao hàng'}</td>
-              <td><span class="badge ${person.status === 'active' ? 'badge-success' : 'badge-secondary'}">${person.status || 'unknown'}</span></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-    document.getElementById('staffStatus').innerHTML = html;
-  } catch (error) {
-    console.error('Failed to load staff:', error);
-    document.getElementById('staffStatus').innerHTML = '<p>Không thể tải trạng thái nhân viên</p>';
+    console.error('Failed to load revenue chart:', error);
   }
 }
 
@@ -222,8 +216,7 @@ function showOrderDetail(orderId) {
 document.addEventListener('DOMContentLoaded', () => {
   loadSidebar();
   loadStats();
-  loadTodayOrders();
-  loadStaffStatus();
+  loadRevenueChart();
 
   const now = new Date();
   document.getElementById('currentDate').textContent =

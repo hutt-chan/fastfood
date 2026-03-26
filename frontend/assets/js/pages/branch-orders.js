@@ -1,6 +1,7 @@
 import { redirectIfNotRole, initLogout } from '../utils/auth.js';
-import { getBranchOrders, assignDelivery, updateOrderStatus, rejectOrder, getRevenue } from '../api/branch.api.js';
+import { getBranchOrders, assignDelivery, updateOrderStatus, rejectOrder, getOrderById } from '../api/branch.api.js';
 import { toast } from '../utils/toast.js';
+import { getLocalDateString } from '../utils/format.js';
 
 redirectIfNotRole('branch_manager');
 
@@ -51,10 +52,10 @@ function getBadgeClass(status) {
 
 function orderActions(order) {
   const updateSelect = `
-    <select class="status-select" data-id="${order.order_id}">
-      <option value=""> Cập nhật trạng thái </option>
+    <select class="status-update-select" data-id="${order.order_id}">
+      <option value="">Cập nhật trạng thái</option>
       <option value="confirmed">✅ Đã xác nhận</option>
-      <option value="preparing">🍳 Chuẩn bị</option>
+      <option value="preparing">🍳 Đang chuẩn bị</option>
       <option value="ready">📦 Sẵn sàng</option>
       <option value="delivering">🚚 Đang giao</option>
       <option value="delivered">✔️ Đã giao</option>
@@ -65,9 +66,12 @@ function orderActions(order) {
   return `<div class="action-cell">${updateSelect} ${rejectButton}</div>`;
 }
 
-const renderOrders = async (filterStatus = '') => {
+const renderOrders = async (filterStatus = '', filterDate = '') => {
   const allOrders = await fetchOrders();
-  const orders = filterStatus ? allOrders.filter((o) => o.status === filterStatus) : allOrders;
+  let orders = allOrders;
+  if (filterStatus) orders = orders.filter((o) => o.status === filterStatus);
+  if (filterDate) orders = orders.filter((o) => (o.created_at || '').startsWith(filterDate));
+
   const container = document.getElementById('orderTable');
   if (!orders.length) {
     container.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Không có đơn hàng nào.</p>';
@@ -85,6 +89,7 @@ const renderOrders = async (filterStatus = '') => {
           <th>Trạng thái</th>
           <th>Ngày tạo</th>
           <th>Cập nhật trạng thái</th>
+          <th>Chi tiết</th>
           <th>Phân công giao</th>
         </tr>
       </thead>
@@ -98,6 +103,7 @@ const renderOrders = async (filterStatus = '') => {
             <td><span class="badge-status ${getBadgeClass(order.status)}">${statusLabel(order.status)}</span></td>
             <td>${new Date(order.created_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</td>
             <td>${orderActions(order)}</td>
+            <td><button class="btn-small btn-outline view-order-btn" data-id="${order.order_id}">Xem</button></td>
             <td>
               <div class="assign-row">
                 <input type="number" min="1" placeholder="ID NV" class="delivery-input" data-id="${order.order_id}" />
@@ -110,7 +116,7 @@ const renderOrders = async (filterStatus = '') => {
     </table>
   `;
 
-  document.querySelectorAll('.status-select').forEach(select => {
+  document.querySelectorAll('.status-update-select').forEach(select => {
     select.addEventListener('change', async (e) => {
       const order_id = e.target.dataset.id;
       const status = e.target.value;
@@ -118,7 +124,7 @@ const renderOrders = async (filterStatus = '') => {
       try {
         await updateOrderStatus(order_id, status);
         toast.success('✅ Cập nhật trạng thái thành công');
-        await renderOrders(filterStatus);
+        await renderOrders(filterStatus, filterDate);
       } catch (err) {
         toast.error('❌ ' + (err.message || 'Lỗi cập nhật trạng thái'));
       }
@@ -138,7 +144,7 @@ const renderOrders = async (filterStatus = '') => {
       try {
         await assignDelivery(order_id, Number(delivery_person_id));
         toast.success('✅ Phân công giao hàng thành công');
-        await renderOrders(filterStatus);
+        await renderOrders(filterStatus, filterDate);
       } catch (err) {
         toast.error('❌ ' + (err.message || 'Lỗi phân công giao hàng'));
       }
@@ -156,20 +162,69 @@ const renderOrders = async (filterStatus = '') => {
       try {
         await rejectOrder(order_id, reason);
         toast.success('✅ Đơn hàng đã bị từ chối, khách hàng được thông báo');
-        await renderOrders(filterStatus);
+        await renderOrders(filterStatus, filterDate);
       } catch (err) {
         toast.error('❌ ' + (err.message || 'Lỗi từ chối đơn hàng'));
       }
     });
   });
+
+  document.querySelectorAll('.view-order-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showOrderDetail(btn.dataset.id);
+    });
+  });
 };
+
+async function showOrderDetail(orderId) {
+  const modal = document.getElementById('orderDetailModal');
+  const closeBtn = document.getElementById('closeOrderModal');
+  const closeBtn2 = document.getElementById('closeBtn2');
+  const setClose = () => { modal.style.display = 'none'; };
+
+  closeBtn.onclick = setClose;
+  closeBtn2.onclick = setClose;
+  modal.onclick = (e) => { if (e.target === modal) setClose(); };
+
+  try {
+    const { data: order } = await getOrderById(orderId);
+    document.getElementById('modalOrderCode').textContent = order.order_code || `#${order.order_id}`;
+    document.getElementById('modalOrderStatus').textContent = statusLabel(order.status);
+    document.getElementById('modalCustomer').textContent = order.full_name || order.customer_id || '-';
+    document.getElementById('modalOrderDate').textContent = new Date(order.created_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
+    document.getElementById('modalAddress').textContent = order.delivery_address || order.delivery_address_id || 'Chưa có';
+    document.getElementById('modalTotal').textContent = `${Number(order.total_amount).toLocaleString('vi-VN')} ₫`;
+
+    const itemHtml = (order.items || []).map(item => `
+      <div class="item-row">
+        <div>${item.product_name}</div>
+        <div style="text-align:center;">${item.quantity}</div>
+        <div style="text-align:right;">${Number(item.unit_price).toLocaleString('vi-VN')} ₫</div>
+        <div style="text-align:right; font-weight:600;">${Number(item.quantity * item.unit_price).toLocaleString('vi-VN')} ₫</div>
+      </div>
+    `).join('');
+
+    document.getElementById('modalItems').innerHTML = itemHtml || '<p>Chưa có sản phẩm trong đơn.</p>';
+    modal.style.display = 'flex';
+  } catch (err) {
+    toast.error('Không thể tải chi tiết đơn hàng');
+  }
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
   await loadSidebar();
-  const select = document.getElementById('statusFilter');
-  const onStatusChange = async () => {
-    await renderOrders(select.value);
+  const statusSelect = document.getElementById('statusFilter');
+  const dateSelect = document.getElementById('dateFilter');
+  const applyBtn = document.getElementById('btnApplyFilters');
+
+  const now = getLocalDateString();
+  dateSelect.value = now;
+
+  const refresh = async () => {
+    await renderOrders(statusSelect.value, dateSelect.value);
   };
-  select.addEventListener('change', onStatusChange);
-  await renderOrders();
+
+  statusSelect.addEventListener('change', refresh);
+  applyBtn.addEventListener('click', refresh);
+  await refresh();
 });

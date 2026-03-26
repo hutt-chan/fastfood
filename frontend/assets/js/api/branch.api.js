@@ -1,6 +1,7 @@
 import api from './api.js';
 export const getBranchOrders   = ()          => api.get('/branch/orders');
 export const getBranchMenu     = ()          => api.get('/branch/menu');
+export const getOrderById      = (id)        => api.get(`/orders/${id}`);
 export const addMenuItem       = (data)      => api.post('/branch/menu', data);
 export const updateMenuItem    = (id, data)  => api.put(`/branch/menu/${id}`, data);
 export const deleteMenuItem    = (id)        => api.delete(`/branch/menu/${id}`);

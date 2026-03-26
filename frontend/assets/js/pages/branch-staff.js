@@ -10,6 +10,8 @@ async function loadSidebar() {
     const html = await response.text();
     document.getElementById('sidebar').innerHTML = html;
     initLogout();
+    // Highlight current page
+    document.querySelector('a[href="staff.html"]').classList.add('active');
   } catch (error) {
     console.error('Failed to load sidebar:', error);
   }
@@ -40,7 +42,7 @@ async function renderStaffList() {
         </thead>
         <tbody>
           ${staff.map(person => `
-            <tr>
+            <tr class="employee-row">
               <td>${person.full_name}</td>
               <td>${person.position}</td>
               <td>${person.phone || '-'}</td>

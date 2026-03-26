@@ -13,17 +13,34 @@
 
     <div class="card" style="margin-top:1rem; padding:1rem;">
       <h4>Thêm nhân viên mới</h4>
-      <form id="createStaffForm" style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center;">
-        <input name="full_name" type="text" placeholder="Họ tên" required style="width:180px;" />
-        <input name="email" type="email" placeholder="Email" required style="width:220px;" />
-        <input name="phone" type="text" placeholder="Số điện thoại" style="width:140px;" />
-        <input name="password" type="password" placeholder="Mật khẩu" required style="width:130px;" />
-        <select name="position" required style="width:150px;">
-          <option value="delivery">Giao hàng</option>
-          <option value="kitchen">Nhân viên bếp</option>
-          <option value="warehouse">Kho</option>
-        </select>
-        <button class="btn btn-primary" type="submit">Thêm nhân viên</button>
+      <form id="createStaffForm" class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Họ tên</label>
+          <input name="full_name" type="text" class="form-control" placeholder="Họ tên" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input name="email" type="email" class="form-control" placeholder="Email" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số điện thoại</label>
+          <input name="phone" type="text" class="form-control" placeholder="Số điện thoại" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu</label>
+          <input name="password" type="password" class="form-control" placeholder="Mật khẩu" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vai trò</label>
+          <select name="position" class="form-control" required>
+            <option value="delivery">Giao hàng</option>
+            <option value="kitchen">Nhân viên bếp</option>
+            <option value="warehouse">Kho</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" type="submit">Thêm nhân viên</button>
+        </div>
       </form>
     </div>
 

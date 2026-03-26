@@ -138,6 +138,10 @@ async function initAddMenuForm() {
       toast.error('⚠️ Product ID là bắt buộc');
       return;
     }
+    if (!base_price) {
+      toast.error('⚠️ Giá gốc là bắt buộc');
+      return;
+    }
 
     try {
       await addMenuItem({
@@ -172,11 +176,15 @@ function initEditModal() {
   formEdit.addEventListener('submit', async (e) => {
     e.preventDefault();
     const product_id = formEdit.dataset.productId;
+    const product_name = formEdit.product_name.value;
+    const description = formEdit.description.value;
     const price_override = formEdit.price_override.value;
     const is_available = formEdit.is_available.checked;
 
     try {
       await updateMenuItem(product_id, {
+        product_name: product_name || undefined,
+        description: description || undefined,
         price_override: price_override ? Number(price_override) : null,
         is_available
       });

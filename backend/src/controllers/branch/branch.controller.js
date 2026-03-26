@@ -22,13 +22,21 @@ const getOrderQueue = async (req, res, next) => {
 const revenueReport = async (req, res, next) => {
   try {
     const store_id = req.user.store_id;
-    const { from, to } = req.query;
+    const { from, to, type = 'daily' } = req.query;
+    let groupBy, selectDate;
+    if (type === 'monthly') {
+      selectDate = "DATE_FORMAT(created_at, '%Y-%m') AS date";
+      groupBy = "DATE_FORMAT(created_at, '%Y-%m')";
+    } else {
+      selectDate = "DATE(created_at) AS date";
+      groupBy = "DATE(created_at)";
+    }
     const [rows] = await db.execute(
-      `SELECT DATE(created_at) AS date, SUM(total_amount) AS revenue
+      `SELECT ${selectDate}, SUM(total_amount) AS revenue
        FROM DonHang
        WHERE store_id = ? AND created_at BETWEEN ? AND ? AND status = 'delivered'
-       GROUP BY DATE(created_at)
-       ORDER BY DATE(created_at)`,
+       GROUP BY ${groupBy}
+       ORDER BY ${groupBy}`,
       [store_id, from, to]
     );
     ok(res, rows);
@@ -96,7 +104,7 @@ const addMenuItem = async (req, res, next) => {
     await db.execute(
       `INSERT INTO ThucDon_CuaHang (store_id, product_id, is_available, price_override)
        VALUES (?, ?, ?, ?)`,
-      [store_id, product_id, is_available === false ? false : true, price_override || null]
+      [store_id, product_id, is_available === false ? false : true, price_override !== undefined && price_override !== null ? price_override : null]
     );
     ok(res, null, 'Thêm món vào thực đơn thành công');
   } catch (err) { next(err); }
@@ -106,7 +114,7 @@ const updateMenuItem = async (req, res, next) => {
   try {
     const store_id = req.user.store_id;
     const product_id = req.params.id;
-    const { price_override, is_available } = req.body;
+    const { price_override, is_available, product_name, description } = req.body;
 
     const [[existing]] = await db.execute('SELECT * FROM ThucDon_CuaHang WHERE store_id = ? AND product_id = ?', [store_id, product_id]);
     if (!existing) return fail(res, 'Món không tồn tại trong thực đơn chi nhánh', 404);
@@ -116,14 +124,35 @@ const updateMenuItem = async (req, res, next) => {
 
     if (price_override !== undefined) {
       updates.push('price_override = ?');
-      params.push(price_override);
+      params.push(price_override !== null ? price_override : null);
     }
     if (is_available !== undefined) {
       updates.push('is_available = ?');
       params.push(is_available);
     }
 
-    if (!updates.length) return fail(res, 'Chưa có dữ liệu cập nhật', 400);
+    if (product_name !== undefined || description !== undefined) {
+      const productValues = [];
+      const productUpdates = [];
+      if (product_name !== undefined) {
+        productUpdates.push('product_name = ?');
+        productValues.push(product_name);
+      }
+      if (description !== undefined) {
+        productUpdates.push('description = ?');
+        productValues.push(description);
+      }
+      if (productUpdates.length) {
+        await db.execute(`UPDATE SanPham SET ${productUpdates.join(', ')} WHERE product_id = ?`, [...productValues, product_id]);
+      }
+    }
+
+    if (!updates.length) {
+      if (product_name === undefined && description === undefined) {
+        return fail(res, 'Chưa có dữ liệu cập nhật', 400);
+      }
+      return ok(res, null, 'Cập nhật món thành công');
+    }
 
     params.push(store_id, product_id);
     await db.execute(`UPDATE ThucDon_CuaHang SET ${updates.join(', ')} WHERE store_id = ? AND product_id = ?`, params);
@@ -301,7 +330,7 @@ const disableStaff = async (req, res, next) => {
     const [[staff]] = await db.execute('SELECT * FROM NhanVien WHERE employee_id = ? AND store_id = ?', [employee_id, store_id]);
     if (!staff) return fail(res, 'Nhân viên không tồn tại ở chi nhánh này', 404);
 
-    await db.execute('UPDATE NguoiDung SET status = ? WHERE user_id = ?', ['inactive', employee_id]);
+    await db.execute('UPDATE NguoiDung SET status = ? WHERE user_id = ?', ['locked', employee_id]);
     await db.execute('UPDATE NhanVien SET is_available = ? WHERE employee_id = ?', [false, employee_id]);
 
     ok(res, null, 'Vô hiệu hóa nhân viên thành công');

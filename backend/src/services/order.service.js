@@ -107,10 +107,13 @@ const cancelOrder = async (order_id, customer_id, cancel_reason, changed_by) => 
 
 const getOrderById = async (order_id) => {
   const [[order]] = await db.execute(
-    `SELECT dh.*, kh.customer_id, nd.full_name, nd.phone, nd.email
+    `SELECT dh.*, kh.customer_id, nd.full_name, nd.phone, nd.email,
+            dc.full_address AS delivery_address, dc.label AS delivery_label,
+            dc.district AS delivery_district, dc.city AS delivery_city
      FROM DonHang dh
-     JOIN KhachHang kh ON dh.customer_id = kh.customer_id
-     JOIN NguoiDung nd ON kh.customer_id = nd.user_id
+     LEFT JOIN KhachHang kh ON dh.customer_id = kh.customer_id
+     LEFT JOIN NguoiDung nd ON kh.customer_id = nd.user_id
+     LEFT JOIN DiaChi dc ON dh.delivery_address_id = dc.address_id
      WHERE dh.order_id = ?`,
     [order_id]
   );

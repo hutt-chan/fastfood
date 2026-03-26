@@ -4,6 +4,9 @@ export const formatVND = (amount) =>
 export const formatDate = (iso) =>
   new Date(iso).toLocaleString('vi-VN');
 
+export const getLocalDateString = (date = new Date()) =>
+  date.toLocaleDateString('en-CA');
+
 export const orderStatusLabel = {
   pending:    '⏳ Chờ xác nhận',
   confirmed:  '✅ Đã xác nhận',
